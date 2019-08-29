@@ -30,7 +30,7 @@ class Windows(QMainWindow):
     def create_ui(self):
         wight = QWidget(self)
         wight.setGeometry(10,10,1200,30)
-        wight.setStyleSheet('background-color:grey')
+        wight.setStyleSheet('background-color:orange')
         layout_up = QHBoxLayout()
         label = QLabel('认购/认沽（1/-1）')
         layout_up.addWidget(label)
@@ -58,6 +58,11 @@ class Windows(QMainWindow):
         self.listWidget.setObjectName("listWidget")
         self.listWidget.itemClicked.connect(self.check_item)
        
+        btn_lock = QPushButton(self)
+        btn_lock.move(800,740)
+        btn_lock.setText('冻结/解冻')
+        btn_lock.clicked.connect(self.lock_unlock_item)
+
         btn_jian = QPushButton(self)
         btn_jian.move(900,740)
         btn_jian.setText('删除')
@@ -261,6 +266,12 @@ class Windows(QMainWindow):
         #print(impliedVolatility)
         widget.findChild(QLabel,'iv').setText(str(impliedVolatility))
         widget.findChild(QDoubleSpinBox,'iv_h').setValue(impliedVolatility)
+
+    def lock_unlock_item(self):
+        if self.currentItem.background()!=QBrush(Qt.gray):
+            self.currentItem.setBackground(QBrush(Qt.gray))
+        else:
+            self.currentItem.setBackground(QBrush(Qt.white))
 
     def get_itemInfo(self,item):
         widget = self.listWidget.itemWidget(item)
