@@ -14,7 +14,7 @@ class Windows(QMainWindow):
     def __init__(self):
 
         super(Windows, self).__init__()
-        self.default_items =[0,0,2.9,0.3,0,0,0,0]
+        self.default_items =[0,0,2.9,0.3,0,0,0,0,0]
         self.stockPrice =2.963
         self.interestRate =3.75
         self.stockPrice_futrue =2.963
@@ -160,7 +160,7 @@ class Windows(QMainWindow):
             
         else:
             filename=QFileDialog.getSaveFileName(self,'save file')
-            pub_data = np.zeros((1,8))
+            pub_data = np.zeros((1,9))
             pub_data[0,0] = self.stockPrice
             pub_data[0,1]= self.stockPrice_futrue
             pub_data[0,2] = self.interestRate
@@ -229,6 +229,9 @@ class Windows(QMainWindow):
         iv_h.setObjectName('iv_h')
         layout_main.addWidget(iv_h)
 
+        if line[8]==1:
+            item.setBackground(QBrush(Qt.gray))
+
         wight.setLayout(layout_main)
         self.listWidget.addItem(item) 
         self.listWidget.setItemWidget(item, wight) 
@@ -253,7 +256,7 @@ class Windows(QMainWindow):
     def check_item(self,item):
         
         self.currentItem =item
-        callput,longshort,eprice,price,count,time,iv,iv_h = self.get_itemInfo(item)
+        callput,longshort,eprice,price,count,time,iv,iv_h,islock = self.get_itemInfo(item)
         if callput==0&longshort==0:
             return
         widget = self.listWidget.itemWidget(item)
@@ -283,17 +286,19 @@ class Windows(QMainWindow):
         time =widget.findChild(QSpinBox,'time').value()
         iv = widget.findChild(QLabel,'iv').text()
         iv_h =widget.findChild(QDoubleSpinBox,'iv_h').value()
-        
-        return callput,longshort,eprice,price,count,time,float(iv),iv_h
+        islock =0
+        if item.background()==QBrush(Qt.gray):
+            islock = 1
+        return callput,longshort,eprice,price,count,time,float(iv),iv_h,islock
         
     def getAllListInfo(self):
         
         count =self.listWidget.count()
-        data = np.zeros((count,8))
+        data = np.zeros((count,9))
         for j in range(self.listWidget.count()):
             item = self.listWidget.item(j)
-            callput,longshort,eprice,price,count,time,iv,iv_h= self.get_itemInfo(item)
-            data[j,:]= [callput,longshort,eprice,price,count,time,iv,iv_h]
+            callput,longshort,eprice,price,count,time,iv,iv_h,islock= self.get_itemInfo(item)
+            data[j,:]= [callput,longshort,eprice,price,count,time,iv,iv_h,islock]
         return data
 
     def Calculation_pointMoney(self,pricefuture):
@@ -302,7 +307,6 @@ class Windows(QMainWindow):
         alreadPay=0
         price_sametime= 0
         for i in range(0,data.shape[0]):
-            alreadPay = alreadPay+data[i,1]*data[i,3]*data[i,4]*10000
             day =data[i,5]-self.dayLater
             if day<1:
                 day =1
@@ -325,7 +329,14 @@ class Windows(QMainWindow):
                     else:
                         futureOptionPrice = data[i,2] -pricefuture
 
-            futureOptionPrice =futureOptionPrice*data[i,1]*data[i,4]*10000
+            
+            
+            if data[i,8]==0:
+                alreadPay = alreadPay+data[i,1]*data[i,3]*data[i,4]*10000
+                futureOptionPrice =futureOptionPrice*data[i,1]*data[i,4]*10000
+            else:
+                futureOptionPrice =0
+
             price_sametime= price_sametime+futureOptionPrice
            
         return price_sametime-alreadPay
