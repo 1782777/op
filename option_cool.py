@@ -53,20 +53,20 @@ class Windows(QMainWindow):
         
 
         wight_call = QWidget(self)
-        wight_call.setGeometry(635, 40, 100, 700)
+        wight_call.setGeometry(635, 70, 100, 670)
         self.layout_call = QVBoxLayout()
         self.layout_call.setContentsMargins(0, 0, 0, 0)
         wight_call.setLayout(self.layout_call)
         
         wight_mid = QWidget(self)
-        wight_mid.setGeometry(735, 40, 100, 700)
+        wight_mid.setGeometry(735, 70, 100, 670)
         
         self.layout_mid = QVBoxLayout()
         self.layout_mid.setContentsMargins(0, 0, 0, 0)
         wight_mid.setLayout(self.layout_mid)
         
         wight_put = QWidget(self)
-        wight_put.setGeometry(835, 40, 100, 700)
+        wight_put.setGeometry(835, 70, 100, 670)
         self.layout_put = QVBoxLayout()
         self.layout_put.setContentsMargins(0, 0, 0, 0)
         wight_put.setLayout(self.layout_put)
@@ -185,7 +185,7 @@ class Windows(QMainWindow):
         
 
         wight_out_tt =QWidget(self)
-        wight_out_tt.setGeometry(635, 10, 300, 25)
+        wight_out_tt.setGeometry(635, 40, 300, 25)
         layout_out_tt = QHBoxLayout()
         layout_out_tt.setContentsMargins(0, 0, 0, 0)
         #wight_out_tt.setStyleSheet('background-color:red')
