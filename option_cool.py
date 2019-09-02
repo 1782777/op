@@ -20,11 +20,11 @@ class Windows(QMainWindow):
         
         self.interestRate=3.75
         self.stockPrice_futrue =2.9
-        self.iv_futrue = 20.0
+        self.iv_futrue = 0
         self.dayLater =0
 
         super(Windows, self).__init__()
-        self.setGeometry(0, 0, 1200, 800)
+        self.setGeometry(20, 50, 1200, 800)
         self.currentItem =None
         self.create_ui()
         
@@ -85,16 +85,25 @@ class Windows(QMainWindow):
         labelr_3 =QLabel('50etf未来价格:')
         self.spin_future = QDoubleSpinBox()
         self.spin_future.setDecimals(3)
+        
         self.spin_future.setSingleStep(0.005)
-        self.spin_future.setValue(self.stockPrice_futrue)
+        self.spin_future.setValue(float(self.labelr_currentstock_prince.text()))
         self.spin_future.valueChanged.connect(lambda val:self.set_stockPriceFutrue(val))
 
         labelr_iv_future =QLabel('未来波动:')
-        self.spin_future_iv = QDoubleSpinBox()
-        self.spin_future_iv.setDecimals(2)
-        self.spin_future_iv.setSingleStep(0.05)
-        self.spin_future_iv.setValue(self.iv_futrue)
-        self.spin_future_iv.valueChanged.connect(lambda val:self.set_ivFuture(val))
+        # self.spin_future_iv = QDoubleSpinBox()
+        # self.spin_future_iv.setDecimals(2)
+        # self.spin_future_iv.setSingleStep(0.05)
+        # self.spin_future_iv.setValue(self.iv_futrue)
+        #self.spin_future_iv.valueChanged.connect(lambda val:self.set_ivFuture(val))
+        self.sp=QSlider(Qt.Horizontal)
+        self.sp.setMinimum(-100)
+        self.sp.setMaximum(100)
+        self.sp.setSingleStep(0.01)
+        self.sp.setValue(self.iv_futrue)
+        self.sp.setTickPosition(QSlider.TicksBelow)
+        self.sp.setTickInterval(5)
+        self.sp.valueChanged.connect(lambda val:self.set_ivFuture(val))
 
 
         labelr_daylater =QLabel('几天以后:')
@@ -114,7 +123,7 @@ class Windows(QMainWindow):
         layout_r.addWidget(labelr_3)
         layout_r.addWidget(self.spin_future)
         layout_r.addWidget(labelr_iv_future)
-        layout_r.addWidget(self.spin_future_iv)
+        layout_r.addWidget(self.sp)
         layout_r.addWidget(labelr_daylater)
         layout_r.addWidget(self.spin_daylater)
         layout_r.addWidget(btn_calculated)
@@ -155,8 +164,8 @@ class Windows(QMainWindow):
             
             for j in range(self.listWidget.count()):
                 item = self.listWidget.item(j)
-                code,ls,count =self.get_itemInfo(item)
-                data[j,:]=[code,ls,count]
+                code,callput,longshort,eprice,price,count,time,iv,iv_h =self.get_itemInfo(item)
+                data[j,:]=[code,longshort,count]
             print (data)
             np.save(filename[0],data)
 
@@ -167,6 +176,7 @@ class Windows(QMainWindow):
         self.stockPrice_futrue =value
 
     def set_ivFuture(self,value):
+        print(value)
         self.iv_futrue = value
 
     def set_daylater(self,value):
@@ -338,7 +348,7 @@ class Windows(QMainWindow):
         price =widget.findChild(QLabel,'price').text()
         time =widget.findChild(QLabel,'label_expire_day').text()
         iv =widget.findChild(QLabel,'iv').text()
-        iv_h=self.iv_futrue
+        iv_h=float(iv)*100+ self.iv_futrue*float(iv)
         #print (code,callput,longshort,eprice,price,count,time,iv,iv_h)
         return code,callput,longshort,eprice,price,count,time,iv,iv_h
 
