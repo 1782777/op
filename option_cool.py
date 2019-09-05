@@ -19,7 +19,7 @@ class Windows(QMainWindow):
         self.month = self.loadsina.check_month()
         
         self.interestRate=3.75
-        self.stockPrice_futrue =2.9
+        self.stockPrice_futrue =float(self.loadsina.get_50etf_price()[3])
         self.iv_futrue = 0
         self.dayLater =0
 
@@ -49,7 +49,7 @@ class Windows(QMainWindow):
         btn_jian.resize(15,30)
         btn_jian.setText('>')
         btn_jian.clicked.connect(self.del_item)
-
+        
         
 
         wight_call = QWidget(self)
@@ -368,16 +368,36 @@ class Windows(QMainWindow):
         print(data)
         alreadPay=0
         price_sametime= 0
+        delta =0
+        gama=0
+        vega=0
+        theta=0
+
         for i in range(0,data.shape[0]):
             day =data[i,5]-self.dayLater
             if day<1:
                 day =1
             futureOption = BS([pricefuture,data[i,2],self.interestRate,day], data[i,7])
+            
+            
+
             if self.dayLater<data[i,5]:
                 if data[i,0] == 1:
                     futureOptionPrice = futureOption.callPrice
+
+                    # theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7], callPrice = data[i,3])
+                    # delta = data[i,4]*data[i,1]*theOption._delta()[0]+delta
+                    # gama = data[i,4]*data[i,1]*theOption._gamma()+gama
+                    # vega = data[i,4]*data[i,1]*theOption._vega()+vega
+                    # theta = data[i,4]*data[i,1]*theOption._theta()[0]+theta
                 else:
                     futureOptionPrice = futureOption.putPrice
+
+                    # theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7],  putPrice = data[i,3])
+                    # delta = data[i,4]*data[i,1]*theOption._delta()[1]+delta
+                    # gama = data[i,4]*data[i,1]*theOption._gamma()+gama
+                    # vega = data[i,4]*data[i,1]*theOption._vega()+vega
+                    # theta = data[i,4]*data[i,1]*theOption._theta()[1]+theta
             else:
                 print('tianshuchaoguole')
                 if data[i,0] == 1:
@@ -396,11 +416,13 @@ class Windows(QMainWindow):
             if True:
                 alreadPay = alreadPay+data[i,1]*data[i,3]*data[i,4]*10000
                 futureOptionPrice =futureOptionPrice*data[i,1]*data[i,4]*10000
+
             else:
                 futureOptionPrice =0
 
             price_sametime= price_sametime+futureOptionPrice
-           
+        #print(delta,gama,vega,theta)
+        #self.statusBar().showMessage('delta='+str(delta)+'  gamma='+str(gama)+'  vega='+str(vega)+'  theta='+str(theta))
         return price_sametime-alreadPay
 
     def Show_Profit(self):

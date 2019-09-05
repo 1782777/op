@@ -25,8 +25,6 @@ class Windows(QMainWindow):
         self.create_ui()
         self.data= np.zeros((1,8))
         
-        
-
     def create_ui(self):
         wight = QWidget(self)
         wight.setGeometry(10,10,1200,30)
