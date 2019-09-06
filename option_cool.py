@@ -361,7 +361,7 @@ class Windows(QMainWindow):
             data[j,:]= [callput,longshort,eprice,price,count,time,iv,iv_h]
         return data
 
-    def Calculation_pointMoney(self,pricefuture):
+    def Calculation_pointMoney(self,pricefuture,iscal_greeks= False):
         
         #print(pricefuture)
         data = self.getAllListInfo()
@@ -384,20 +384,20 @@ class Windows(QMainWindow):
             if self.dayLater<data[i,5]:
                 if data[i,0] == 1:
                     futureOptionPrice = futureOption.callPrice
-
-                    # theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7], callPrice = data[i,3])
-                    # delta = data[i,4]*data[i,1]*theOption._delta()[0]+delta
-                    # gama = data[i,4]*data[i,1]*theOption._gamma()+gama
-                    # vega = data[i,4]*data[i,1]*theOption._vega()+vega
-                    # theta = data[i,4]*data[i,1]*theOption._theta()[0]+theta
+                    if iscal_greeks:
+                        theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7], callPrice = data[i,3])
+                        delta = data[i,4]*data[i,1]*theOption._delta()[0]+delta
+                        gama = data[i,4]*data[i,1]*theOption._gamma()+gama
+                        vega = data[i,4]*data[i,1]*theOption._vega()+vega
+                        theta = data[i,4]*data[i,1]*theOption._theta()[0]+theta
                 else:
                     futureOptionPrice = futureOption.putPrice
-
-                    # theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7],  putPrice = data[i,3])
-                    # delta = data[i,4]*data[i,1]*theOption._delta()[1]+delta
-                    # gama = data[i,4]*data[i,1]*theOption._gamma()+gama
-                    # vega = data[i,4]*data[i,1]*theOption._vega()+vega
-                    # theta = data[i,4]*data[i,1]*theOption._theta()[1]+theta
+                    if iscal_greeks:
+                        theOption = BS([pricefuture,  data[i,2],  self.interestRate, day],volatility= data[i,7],  putPrice = data[i,3])
+                        delta = data[i,4]*data[i,1]*theOption._delta()[1]+delta
+                        gama = data[i,4]*data[i,1]*theOption._gamma()+gama
+                        vega = data[i,4]*data[i,1]*theOption._vega()+vega
+                        theta = data[i,4]*data[i,1]*theOption._theta()[1]+theta
             else:
                 print('tianshuchaoguole')
                 if data[i,0] == 1:
@@ -421,12 +421,14 @@ class Windows(QMainWindow):
                 futureOptionPrice =0
 
             price_sametime= price_sametime+futureOptionPrice
-        #print(delta,gama,vega,theta)
-        #self.statusBar().showMessage('delta='+str(delta)+'  gamma='+str(gama)+'  vega='+str(vega)+'  theta='+str(theta))
+        if iscal_greeks:
+            print(delta,gama,vega,theta)
+            self.statusBar().showMessage('delta='+str(delta)+'  gamma='+str(gama)+'  vega='+str(vega)+'  theta='+str(theta))
+        
         return price_sametime-alreadPay
 
     def Show_Profit(self):
-        profit = self.Calculation_pointMoney(self.stockPrice_futrue)
+        profit = self.Calculation_pointMoney(self.stockPrice_futrue,iscal_greeks=True)
         #print(profit)
         self.labelr_4.setText(str(profit))
 
