@@ -1,39 +1,56 @@
 import tushare as ts
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
-data =ts.get_hist_data('000016', ktype='5')
-# x = data.index
-# y=data['volume']
 
-# plt.plot(x ,y,color ='red', linewidth=2.5) 
-# plt.show()
+class tush():
+    def __init__(self):
+        ts.set_token('cab985c55c4477461541810292d52e90887d94103dd9defebb4270cf')
+        self.pro = ts.pro_api()
 
-# for i in data.index:
-#     d =data.loc[:,'volume']
-#     print(d)
+    def get_50_day(self):
+        df =ts.get_hist_data('sz50')
+        lastday = df['close'].shift(-1)
+        df['lastday']= lastday
+        
+        openhigh = (df['open']-df['lastday'])/df['lastday']*100
+        
+        df['open_high'] = openhigh.shift(-1)
+        print(df)
+        
+        df = df.drop(columns=['v_ma20','ma10','ma20','v_ma5','v_ma10','ma5','price_change','high','low','open','close','lastday'], axis=1)
+        df.index = pd.to_datetime(df.index)
+        return df
 
-#print(data['2019-08-21 09:05:00':'2019-08-24' '09:05:00'])
+    def get_north_money(self):
+        df = self.pro.moneyflow_hsgt(start_date='20170101', end_date='20190908')
+        
+        date = pd.to_datetime(df['trade_date'])
+        df.index = date
+        data = df['north_money']
+        
+        return data
+        # tarde_date = df['trade_date']
+        # df.index = tarde_date.to_datetime()
+        # print (df["north_money"])
 
-# a =data.iloc[1:2]
-time =data.index
-#count =time.shape[0]
-indexs = []
-for d in time:
-    indexs.append(d.split(' ')[0])
-    
+if __name__ == '__main__':
+    tss = tush()
+    df_sh = tss.get_50_day()
+    df_north = tss.get_north_money()
+    result = pd.concat([df_north, df_sh], axis=1, join='inner')
+    #print(result)
+    result['north_money'] = result['north_money']/result['north_money'].max()*4
+    result['volume'] = result['volume']/result['volume'].max()*6-1
+    #result['p_change'] = result['p_change']/result['p_change'].max()
+    result['open_high'] = result['open_high']/result['open_high'].max()
 
-np_date = np.array(indexs)
-np_date = np.unique(np_date)
-#print(np_date)
-
-for i in range(0,np_date.shape[0]-1):
-    #print (np_date[i])
-    oneday = data[np_date[i+1]:np_date[i]]
-    print (oneday.shape)
-
-#print(row)
-#print(time.split(' ')[0])
-#print(data['2019-08-23':'2019-08-22'])
-
+    result= result.drop(columns=['open_high'], axis=1)
+    #print(result)
+    # df_norm = (result - result.min()) / (result.max() - result.min())
+    #result.plot(kind='bar')
+    result.plot()
+    plt.grid(linestyle='-.')
+    plt.show()
 

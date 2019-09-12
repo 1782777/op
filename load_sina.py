@@ -1,12 +1,16 @@
 import json
 import sys
 from requests import get
+import pandas as pd
+import random
+import datetime
 
 #'hq.sinajs.cn/list=sh000016'
 
 class LoadNet:
     def __init__(self):
         self.month = self.check_month()
+        self.test =0
     
     def check_month(self):
         url='http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getStockName'
@@ -63,16 +67,43 @@ class LoadNet:
         #return list(zip(fields, data))
         return data
 
+    def get_sz50_price(self):
+        url = "http://hq.sinajs.cn/list=sh000016"
+        needTry = True
+        while needTry:
+            try:
+                data = get(url).content.decode('gbk')
+                needTry = False
+            except:
+                needTry = True
+        data = data[data.find('"') + 1: data.rfind('"')].split(',')
+        fields = ['股票名字', '今日开盘价', '昨日收盘价', '当前价格', '今日最高价', '今日最低价', '竞买价', '竞卖价',
+                '成交的股票数', '成交金额', '买一量', '买一价', '买二量', '买二价', '买三量', '买三价', '买四量', '买四价',
+                '买五量', '买五价', '卖一量', '卖一价', '卖二量', '卖二价', '卖三量', '卖三价', '卖四量', '卖四价',
+                '卖五量', '卖五价', '日期', '时间']
+        #return list(zip(fields, data))
+        return data
+    def get_test(self):
+        date = pd.datetime.now()+datetime.timedelta(hours=-10,minutes=2.4)
+        str_date = date.strftime('%H:%M:%S')
+        self.test = self.test+random.randint(1000,2200)
+        str_vol = str(self.test)
+        print(str_date,str_vol)
+        fields = ['股票名字', '今日开盘价', '昨日收盘价', '当前价格', '今日最高价', '今日最低价', '竞买价', '竞卖价',
+                str_vol, '成交金额', '买一量', '买一价', '买二量', '买二价', '买三量', '买三价', '买四量', '买四价',
+                '买五量', '买五价', '卖一量', '卖一价', '卖二量', '卖二价', '卖三量', '卖三价', '卖四量', '卖四价',
+                '卖五量', '卖五价', '日期', str_date]
+        return fields
 
 if __name__ == '__main__':
     load = LoadNet()
-    print(load.check_month())
-    month = load.check_month()
-    upcode, downcode= load.get_op_codes(month[0])
-    print(upcode, downcode)
+    print(load.get_sz50_price())
+    # month = load.check_month()
+    # upcode, downcode= load.get_op_codes(month[0])
+    # #print(upcode, downcode)
     # for code in upcode:
     #     pass
     #     print(load.get_op_greek_alphabet(code))
-    day =load.get_op_expire_day(month[0])
-    print(day)
-    print('finish')
+    # day =load.get_op_expire_day(month[0])
+    # print(day)
+    # print('finish')

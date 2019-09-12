@@ -1,32 +1,72 @@
 import pandas as pd 
 import numpy as np 
 import matplotlib.pyplot as plt
+from get_day_histroy import history
+import matplotlib.font_manager as font_manager
+from load_sina import LoadNet
 
-df= pd.read_excel('test/000016_5_l.xlsx',usecols=[0, 16],skipfooter=1,skiprows=[0,1,3],parse_dates=['      时间'],index_col='      时间')
+his=history()
+mean_data = his.get_dayMean()
+ln= LoadNet()
 
+mean_data['current']=0
+mean_data['mean']=0
+POINTS = 100
+sin_list = [0] * POINTS
+indx = 0
+zx_index =[]
+ 
+fig, ax = plt.subplots()
+# ax.set_ylim([-2, 2])
+# ax.set_xlim([0, POINTS])
+# ax.set_autoscale_on(False)
+#ax.set_xticks(range(0, 100, 10))
+# ax.set_yticks(range(-2, 3, 1))
+#ax.grid(True)
+ 
+#line_sin, = ax.plot(mean_data, label='volume', color='cornflowerblue')
+ax.legend(loc='upper center', ncol=4, prop=font_manager.FontProperties(size=8))
 
+print(mean_data)
+diff_data =pd.DataFrame()
+def sin_output(ax):
+    ax.cla()
+    global indx, sin_list, line_sin
+    if indx == 20:
+        indx = 0
+    indx += 1
+ 
+    sin_list = sin_list[1:] + [np.sin((indx / 10) * np.pi)]
+    #print(sin_list)
+    zx_index.append(indx)
 
-pd_index=df.index.to_period("D")
-dup_data = pd_index.drop_duplicates(keep='first')
+    # line_sin.set_xdata(zx_index)
+    # line_sin.set_ydata(np.sin(zx_index))
 
+    a = ln.get_sz50_price()
+    str_time =a[31]
+    str_volume =a[8]
+    #print(str_time,str_volume)
+    time =pd.datetime.strptime(str_time,'%H:%M:%S')
+    #time = pd.to_datetime(str_time)
+    # print(type(mean_data.index[0]))
+    #print(type(time))
+    
+    mean_data['current'][mean_data.index>time.time()] = str_volume
+    print(mean_data['current'][mean_data.index>time.time()])
+    #lasttime_frame['current'] = str_volume
+    diff_data = mean_data.copy()
+    diff_data['current'] = pd.to_numeric(diff_data['current']) 
+    diff_data['current'] = diff_data['current'].diff(1)
+    diff_data.iloc[0,1] =float( mean_data.iloc[0,1])
+    print(diff_data)
+    ax.plot(diff_data)
 
-df_empty = pd.DataFrame()
-b = False
-
-for i in dup_data:
-    each_df = df[str(i)]
-    if each_df.shape[0]==48:
-        
-        each_df.index =each_df.index.time
-        if b==False:
-            df_empty =each_df
-            b=True
-
-        df_empty = df_empty+each_df
-        
-mean_df = df_empty.div(df_empty.shape[0])
-series = pd.Series(range(48), index=mean_df)
-print (mean_df)
-
-mean_df.plot()
+    #ax.draw_artist(line_sin)
+    ax.figure.canvas.draw()
+ 
+ 
+timer = fig.canvas.new_timer(interval=2000)
+timer.add_callback(sin_output, ax)
+timer.start()
 plt.show()
