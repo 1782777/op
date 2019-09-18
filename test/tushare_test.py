@@ -17,10 +17,15 @@ class tush():
         openhigh = (df['open']-df['lastday'])/df['lastday']*100
         
         df['open_high'] = openhigh.shift(-1)
-        print(df)
+        
         
         df = df.drop(columns=['v_ma20','ma10','ma20','v_ma5','v_ma10','ma5','price_change','high','low','open','close','lastday'], axis=1)
         df.index = pd.to_datetime(df.index)
+        print(df)
+        # p_price = df['p_change'].shift(1)
+        # df['p_change']= p_price
+        # print(df)
+
         return df
 
     def get_north_money(self):
@@ -46,7 +51,7 @@ if __name__ == '__main__':
     #result['p_change'] = result['p_change']/result['p_change'].max()
     result['open_high'] = result['open_high']/result['open_high'].max()
 
-    result= result.drop(columns=['open_high'], axis=1)
+    result= result.drop(columns=['open_high','volume'], axis=1)
     #print(result)
     # df_norm = (result - result.min()) / (result.max() - result.min())
     #result.plot(kind='bar')

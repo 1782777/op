@@ -15,7 +15,7 @@ POINTS = 100
 sin_list = [0] * POINTS
 indx = 0
 zx_index =[]
- 
+
 fig, ax = plt.subplots()
 # ax.set_ylim([-2, 2])
 # ax.set_xlim([0, POINTS])
@@ -23,7 +23,7 @@ fig, ax = plt.subplots()
 #ax.set_xticks(range(0, 100, 10))
 # ax.set_yticks(range(-2, 3, 1))
 #ax.grid(True)
- 
+
 #line_sin, = ax.plot(mean_data, label='volume', color='cornflowerblue')
 ax.legend(loc='upper center', ncol=4, prop=font_manager.FontProperties(size=8))
 
