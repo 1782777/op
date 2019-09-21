@@ -45,14 +45,14 @@ def sin_output(ax):
 
     a = ln.get_sz50_price()
     str_time =a[31]
-    str_volume =a[8]
+    str_volume =a[9]
     #print(str_time,str_volume)
     time =pd.datetime.strptime(str_time,'%H:%M:%S')
     #time = pd.to_datetime(str_time)
     # print(type(mean_data.index[0]))
     #print(type(time))
     
-    mean_data['current'][mean_data.index>time.time()] = str_volume
+    mean_data['current'][mean_data.index>time.time()] = int(str_volume)/100000*3
     print(mean_data['current'][mean_data.index>time.time()])
     #lasttime_frame['current'] = str_volume
     diff_data = mean_data.copy()
