@@ -59,7 +59,7 @@ class data_maker():
     def make(self):
         # print(self.pf_min5)
         # print(self.pf_day)
-        tfrecords_filename = 'data/train.tfrecords'
+        tfrecords_filename = 'data/train2.tfrecords'
         writer = tf.python_io.TFRecordWriter(tfrecords_filename)
         
         #
@@ -105,7 +105,7 @@ class data_maker():
             
             x = np.array(pd_min_day)
             label = np.array(pd_label)
-            print(label.shape)
+            print(x.shape)
             example = tf.train.Example(features = tf.train.Features(feature={
                 'label' : self._bytes_feature(label.tostring()),
                 'x' : self._bytes_feature(x.tostring())
