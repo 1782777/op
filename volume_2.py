@@ -60,9 +60,10 @@ def sin_output(ax):
     diff_data['current'] = pd.to_numeric(diff_data['current']) 
     diff_data['current'] = diff_data['current'].diff(1)
     diff_data.iloc[0,1] =float( mean_data.iloc[0,1])
-    print(mean_data)
-    ax.plot(mean_data)
-
+    mean_data['mean']=mean_data['current']/mean_data['VOL-TDX.VOLUME']
+    
+    ax.plot(mean_data['mean'][mean_data.index<=time.time()])
+    print(mean_data['mean'][mean_data.index<=time.time()])
     #ax.draw_artist(line_sin)
     ax.figure.canvas.draw()
  
