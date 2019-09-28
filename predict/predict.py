@@ -170,7 +170,7 @@ if __name__ == '__main__':
     os.environ["TF_CPP_MIN_LOG_LEVEL"]='3'
     
     
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         pre = predict()
         init_op = tf.global_variables_initializer()
         sess.run(init_op)
@@ -192,16 +192,16 @@ if __name__ == '__main__':
         #     D_solver,G_solver = sess.run(pre.train(),feed_dict={pre.X:example,pre.label:l,pre.keep_prob:0.7})
         #     print('------------------------------------------------')
         #     print(D_solver,G_solver)
-
-        x,label = pre.read_decode('data/train.tfrecords',100)
-        coord=tf.train.Coordinator()
-        threads= tf.train.start_queue_runners(coord=coord)
-        example, l = sess.run([x,label])
-        example[:,:,0] =example[:,:,0]/10000000
-        example[:,:,2] =example[:,:,2]/100000000
-        example=example[:,:,:,np.newaxis]
-        l=l[:,:,np.newaxis]
-        l=l[:,:,np.newaxis]
-        print('--------------------------',example)
-        g = sess.run(pre.nn_generate(),feed_dict={pre.X:example,pre.keep_prob:0.7})
-        print(g)
+        for it in range(20000):
+            x,label = pre.read_decode('data/train.tfrecords',100)
+            coord=tf.train.Coordinator()
+            threads= tf.train.start_queue_runners(coord=coord)
+            example, l = sess.run([x,label])
+            example[:,:,0] =example[:,:,0]/10000000
+            example[:,:,2] =example[:,:,2]/100000000
+            example=example[:,:,:,np.newaxis]
+            l=l[:,:,np.newaxis]
+            l=l[:,:,np.newaxis]
+            print('--------------------------',example)
+            g = sess.run(pre.nn_generate(),feed_dict={pre.X:example,pre.keep_prob:0.7})
+            print(g.shape)
