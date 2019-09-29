@@ -26,7 +26,7 @@ class LoadNet:
     def get_op_codes(self,month):
         
         url_up = "http://hq.sinajs.cn/list=OP_UP_510050" + month[-4:]
-        print(url_up)
+        #print(url_up)
         url_down = "http://hq.sinajs.cn/list=OP_DOWN_510050" + month[-4:]
         data_up = str(get(url_up).content).replace('"', ',').split(',')
         codes_up = [i[7:] for i in data_up if i.startswith('CON_OP_')]

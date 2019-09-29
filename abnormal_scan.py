@@ -8,21 +8,68 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
+offset_real =0.05  #小于或者大于多少算实值
+offset =0.80 #偏差
 
 class scan():
     def __init__(self):
         self.load =LoadNet()
         self.months = self.load.check_month()
-        self.data_panel = pd.DataFrame()
-        self.fig = plt.figure()
-        self.tmp =0.0
-        self.ax = self.fig.gca(projection='3d')
-        timer = self.fig.canvas.new_timer(interval=1000)
-        timer.add_callback(self.draw)
-        timer.start()
-        plt.show()
+        # self.data_panel = pd.DataFrame()
+        # self.fig = plt.figure()
+        # self.tmp =0.0
+        # self.ax = self.fig.gca(projection='3d')
+        # timer = self.fig.canvas.new_timer(interval=1000)
+        # timer.add_callback(self.draw)
+        # timer.start()
+        # plt.show()
 
- 
+    def get_df_price(self):
+        data_panel = pd.DataFrame()
+        for month in self.months:
+            up ,down = self.load.get_op_codes(month)
+            xqj_list =[]
+            iv_list=[]
+            for code in up:
+                data = self.load.get_op_greek_alphabet(code)
+                xqj_list.append(float(data[13]))
+                iv_list.append(float(data[14]))
+            df=pd.DataFrame(iv_list,index=xqj_list,columns=[month])
+            data_panel = pd.concat([data_panel,df],axis=1)
+            xqj_list =[]
+            iv_list=[]
+            for code in down:
+                data = self.load.get_op_greek_alphabet(code)
+                xqj_list.append(float(data[13]))
+                iv_list.append(float(data[14]))
+            df=pd.DataFrame(iv_list,index=xqj_list,columns=[month])
+            data_panel = pd.concat([data_panel,df],axis=1)
+        #print (data_panel)
+        return data_panel
+
+    def check_deep_real_value(self,df_data):
+        etf_price = float(self.load.get_50etf_price()[3])
+        etf_price_up =etf_price-etf_price*offset_real
+        etf_price_down =etf_price+etf_price*offset_real
+        #print(etf_price)
+
+        df_data.columns =[1,-1,1,-1,1,-1,1,-1]
+        real_value_up = df_data[df_data.index<etf_price_up][[1]]
+        real_value_down =df_data[df_data.index>etf_price_down][[-1]]
+        real_value_up = etf_price -real_value_up
+        real_value_down =etf_price +real_value_down
+        # print(real_value_up)
+        #print(real_value_down)
+        for index, row in real_value_up.iterrows():
+            row.index = self.months
+            if(len(row[row/index<offset].index)>0):
+                print(index,str(row[row/index<offset].index[0]),'购----------')
+        for index, row in real_value_down.iterrows():
+            row.index = self.months
+            #print(row[row/index])
+            if(len(row[row/index>2-offset].index)>0):
+                print(index,str(row[row/index>2-offset].index[0]),'沽---------')
+        #print('====================================================')
 
     def draw(self):
         self.data_panel = pd.DataFrame()
@@ -77,7 +124,12 @@ class scan():
 
 if __name__ == '__main__':
     s = scan()
-    #s.draw()
+    i= 500
+    while True:
+        if(i%500==0):
+            print('持续检测深度实值合约价差>20%')
+        s.check_deep_real_value(s.get_df_price())
+        i+=i
 
     
 
