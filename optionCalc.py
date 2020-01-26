@@ -26,7 +26,7 @@ def impliedVolatility(className, args, callPrice=None, putPrice=None, high=500.0
 	#注：由于上证50ETF期权的值为四位小数，这里直接采用小数点后四位的精度
 	#另：该程序在这里有bug，如果callPut = 0.05，0.04999,0.05001，算出来的值，后两个都比0.05的小，这是不正确的，原因在于使用0.05的精度太小
 	decimals = 4
-	for i in range(10000):	# To avoid infinite loops
+	for i in range(1000):	# To avoid infinite loops
 		mid = (high + low) / 2
 		if mid < 0.00001:
 			mid = 0.00001
@@ -327,8 +327,11 @@ class BS:
 		if self.strikePrice == 0:
 			raise ZeroDivisionError('The strike price cannot be zero')
 		else:
+			#_b_ = e**-(self.interestRate*self.daysToExpiration)
 			call = norm.cdf(self._d1_)
 			put = -norm.cdf(-self._d1_)
+			#call = norm.cdf(self._d1_) * _b_
+			#put = -norm.cdf(-self._d1_) * _b_			
 		return [call, put]
 
 	def _delta2(self):

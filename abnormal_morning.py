@@ -15,6 +15,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sip
 import sys
 import time
+from optionCalc import BS,Me
 
 offset_real =0.01 #小于或者大于多少算实值
 offset =0.96#偏差
@@ -25,7 +26,7 @@ class scan():
         self.load =LoadNet()
         self.months = self.load.check_month()
         self.day_later =self.load.get_op_expire_day('2019')
-        #print(self.day_later)
+        print(self.day_later)
         self.etf_price =2.95
         self.data_price=pd.DataFrame()
         self.data_iv =pd.DataFrame()
@@ -44,15 +45,17 @@ class scan():
         self.data_price=pd.DataFrame()
         self.data_iv =pd.DataFrame()
         for month in self.months:
+            date, time =self.load.get_op_expire_day(month)
             up ,down = self.load.get_op_codes(month)
             xqj_list =[]
             iv_list =[]
             p_list=[]
             for code in up:
-                data = self.load.get_op_greek_alphabet(code)
-                xqj_list.append(float(data[13]))
-                iv_list.append(float(data[9]))
-                p_list.append(float(data[14]))
+                data = self.load.get_op_info(code)
+                xqj_list.append(float(data[7]))
+                p_list.append(float(data[1]))
+                # theOption = BS([self.etf_price, float(data[7]) ,3.75, time],  callPrice = data[1])
+                # iv_list.append(theOption.impliedVolatility)
             df_p=pd.DataFrame(p_list,index=xqj_list,columns=[month+'_call'])
             self.data_price= pd.concat([self.data_price,df_p],axis=1)
             df_iv = pd.DataFrame(iv_list,index=xqj_list,columns=[month+'_call'])
@@ -61,16 +64,18 @@ class scan():
             iv_list =[]
             p_list=[]
             for code in down:
-                data = self.load.get_op_greek_alphabet(code)
-                xqj_list.append(float(data[13]))
-                iv_list.append(float(data[9]))
-                p_list.append(float(data[14]))
+                data = self.load.get_op_info(code)
+                xqj_list.append(float(data[7]))
+                p_list.append(float(data[1]))
+                # theOption = BS([self.etf_price, float(data[7]) ,3.75, time],  putPrice = data[1])
+                # iv_list.append(theOption.impliedVolatility)
             df_p=pd.DataFrame(p_list,index=xqj_list,columns=[month+'_put'])
             self.data_price= pd.concat([self.data_price,df_p],axis=1)
             df_iv = pd.DataFrame(iv_list,index=xqj_list,columns=[month+'_put'])
             self.data_iv =pd.concat([self.data_iv,df_iv],axis=1)
         self.data_price = self.data_price[self.data_price!=0]
-        #print(self.data_price)
+        self.data_iv = self.data_iv[self.data_iv!=0]
+        print(self.data_price)
         #print(self.data_iv) 
 
     def find_pd_diff(self):
@@ -257,7 +262,7 @@ class Window(QMainWindow):
     
     def set_tabel_iv(self,data):
         #print(data)
-        self.myTable_iv.setModel(self.pd_to_model(data,factor=600))
+        self.myTable_iv.setModel(self.pd_to_model(data,factor=5))
 
     def set_label_histroy(self,money):
         self.label_histroy_high.setText('最高:'+str(money))

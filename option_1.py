@@ -21,13 +21,13 @@ class Windows(QMainWindow):
         self.dayLater = 0
         self.currentItem =None
 
-        self.setGeometry(0, 0, 1400, 800)
+        self.setGeometry(0, 20, 1400, 800)
         self.create_ui()
         self.data= np.zeros((1,8))
         
     def create_ui(self):
         wight = QWidget(self)
-        wight.setGeometry(10,10,1200,30)
+        wight.setGeometry(10,10,1200,60)
         wight.setStyleSheet('background-color:orange')
         layout_up = QHBoxLayout()
         label = QLabel('认购/认沽（1/-1）')
@@ -52,7 +52,7 @@ class Windows(QMainWindow):
         wight.setLayout(layout_up)
 
         self.listWidget = QtWidgets.QListWidget(self)
-        self.listWidget.setGeometry(QtCore.QRect(10, 40, 1200, 700))
+        self.listWidget.setGeometry(QtCore.QRect(10, 60, 1200, 700))
         self.listWidget.setObjectName("listWidget")
         self.listWidget.itemClicked.connect(self.check_item)
        

@@ -40,7 +40,7 @@ class history:
 if __name__ == '__main__':
     his = history()
     mean_df=his.get_dayMean()
-    print(mean_df)
+    #print(mean_df)
     mean_df.plot()
     plt.show()
 

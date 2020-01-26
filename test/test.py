@@ -5,8 +5,10 @@ import pandas as pd
 
 
 
-hello = tf.constant('hello world')
-sess = tf.Session()
+# hello = tf.constant('hello world')
+# sess = tf.Session()
 
-a= sess.run(hello)
-print(a)
+# a= sess.run(hello)
+# print(a)
+
+print(range(7))

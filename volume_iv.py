@@ -5,37 +5,42 @@ from get_day_histroy import history
 import matplotlib.font_manager as font_manager
 from load_sina import LoadNet
 
+class IV:
+    def __init__(self,ln):
+        self.ln = ln
+    def get_all_iv(self):
+        mouths = ln.check_month()
+        print (mouths)
+
+
 
 
 pd.options.display.max_rows = None
 his=history()
 mean_data = his.get_dayMean()
-#print(mean_data)
 ln= LoadNet()
 
 mean_data['current']=0
 mean_data['mean']=0
-POINTS = 100
-sin_list = [0] * POINTS
-indx = 0
-zx_index =[]
 
-fig, ax = plt.subplots()
+
+#fig, ax = plt.subplots()
+fig = plt.figure(facecolor='darkgray')
+ax = fig.add_subplot(414)
+ax_50_mouth = fig.add_subplot(421)
+ax_50_each = fig.add_subplot(422)
+ax_300_mouth = fig.add_subplot(423)
+ax_300_each =  fig.add_subplot(424)
+ax_300_50 =  fig.add_subplot(413)
+
 
 ax.legend(loc='upper center', ncol=4, prop=font_manager.FontProperties(size=8))
 
-diff_data =pd.DataFrame()
+#diff_data =pd.DataFrame()
 def sin_output(ax):
     ax.cla()
     
-    global indx, sin_list, line_sin
-    if indx == 20:
-        indx = 0
-    indx += 1
- 
-    sin_list = sin_list[1:] + [np.sin((indx / 10) * np.pi)]
-    #print(sin_list)
-    zx_index.append(indx)
+    
 
     
 
@@ -62,16 +67,19 @@ def sin_output(ax):
 
     #print(mean_data)
     ax.plot(mean_data['mean'][mean_data.index<=time_end.time()],'b,-')
-    print(mean_data['mean'][mean_data.index<=time_end.time()])
+    
     cha=(current-tomorrow)/tomorrow*100
     color_label ='r'
     if cha<0: color_label='g'
-    ax.set_title(cha,color=color_label)
+    ax.set_title(format(cha, '.2f'),color=color_label)
 
     ax.figure.canvas.draw()
  
  
-timer = fig.canvas.new_timer(interval=5000)
-timer.add_callback(sin_output, ax)
-timer.start()
-plt.show()
+# timer = fig.canvas.new_timer(interval=5000)
+# timer.add_callback(sin_output, ax)
+# timer.start()
+# plt.show()
+
+iv = IV(ln)
+iv.get_all_iv()

@@ -19,18 +19,39 @@ class LoadNet:
 
     def get_op_expire_day(self,date):
         url = "http://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?date={date}01"
-        data = get(url.format(date=date)).json()['result']['data']
+        needTry = True
+        while needTry:
+            try:
+                data = get(url.format(date=date)).json()['result']['data']
+                needTry = False
+            except:
+                needTry = True
+        #data = get(url.format(date=date)).json()['result']['data']
         return data['expireDay'], data['remainderDays']
 
 
     def get_op_codes(self,month):
         
         url_up = "http://hq.sinajs.cn/list=OP_UP_510050" + month[-4:]
-        #print(url_up)
+        print(url_up)
         url_down = "http://hq.sinajs.cn/list=OP_DOWN_510050" + month[-4:]
-        data_up = str(get(url_up).content).replace('"', ',').split(',')
+        needTry = True
+        while needTry:
+            try:
+                data_up = str(get(url_up).content).replace('"', ',').split(',')
+                needTry = False
+            except:
+                needTry = True
+        #data_up = str(get(url_up).content).replace('"', ',').split(',')
         codes_up = [i[7:] for i in data_up if i.startswith('CON_OP_')]
-        data_down = str(get(url_down).content).replace('"', ',').split(',')
+        needTry = True
+        while needTry:
+            try:
+                data_down = str(get(url_down).content).replace('"', ',').split(',')
+                needTry = False
+            except:
+                needTry = True
+        #data_down = str(get(url_down).content).replace('"', ',').split(',')
         codes_down = [i[7:] for i in data_down if i.startswith('CON_OP_')]
         return codes_up, codes_down
     
@@ -48,7 +69,15 @@ class LoadNet:
 
     def get_op_greek_alphabet(self,code):
         url = "http://hq.sinajs.cn/list=CON_SO_{code}".format(code=code)
-        data = get(url).content.decode('gbk')
+        needTry = True
+        while needTry:
+            try:
+                data = get(url).content.decode('gbk')
+                needTry = False
+            except:
+                needTry = True
+
+        #data = get(url).content.decode('gbk')
         data = data[data.find('"') + 1: data.rfind('"')].split(',')
         # fields = ['期权合约简称', '成交量', 'Delta', 'Gamma', 'Theta', 'Vega', '隐含波动率', '最高价', '最低价', '交易代码',
         #         '行权价', '最新价', '理论价值']
@@ -58,7 +87,14 @@ class LoadNet:
     
     def get_50etf_price(self):
         url = "http://hq.sinajs.cn/list=sh510050"
-        data = get(url).content.decode('gbk')
+        needTry = True
+        while needTry:
+            try:
+                data = get(url).content.decode('gbk')
+                needTry = False
+            except:
+                needTry = True
+        #data = get(url).content.decode('gbk')
         data = data[data.find('"') + 1: data.rfind('"')].split(',')
         fields = ['股票名字', '今日开盘价', '昨日收盘价', '当前价格', '今日最高价', '今日最低价', '竞买价', '竞卖价',
                 '成交的股票数', '成交金额', '买一量', '买一价', '买二量', '买二价', '买三量', '买三价', '买四量', '买四价',
