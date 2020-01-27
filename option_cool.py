@@ -146,7 +146,7 @@ class Windows(QMainWindow):
         self.spin_future.setValue(float(self.labelr_currentstock_prince.text()))
         self.spin_future.valueChanged.connect(lambda val:self.set_stockPricefuture(val))
 
-        labelr_iv_future =QLabel('未来波动:')
+        self.labelr_iv_future =QLabel('未来波动:')
         # self.spin_future_iv = QDoubleSpinBox()
         # self.spin_future_iv.setDecimals(2)
         # self.spin_future_iv.setSingleStep(0.05)
@@ -180,7 +180,7 @@ class Windows(QMainWindow):
         layout_r.addWidget(self.spin_lilv)
         layout_r.addWidget(labelr_3)
         layout_r.addWidget(self.spin_future)
-        layout_r.addWidget(labelr_iv_future)
+        layout_r.addWidget(self.labelr_iv_future)
         layout_r.addWidget(self.sp)
         layout_r.addWidget(labelr_daylater)
         layout_r.addWidget(self.spin_daylater)
@@ -256,6 +256,7 @@ class Windows(QMainWindow):
     def set_ivFuture(self,value):
         print(value)
         self.iv_future = value
+        self.labelr_iv_future.setText('未来波动： '+str(value))
 
     def set_daylater(self,value):
         self.dayLater = value
